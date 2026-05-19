@@ -64,3 +64,18 @@ def test_ela(file_path: str):
 # Uncomment to test
 # test_ela("path/to/your/test.pdf")
 # test_ela("path/to/your/test.jpg")
+
+from forensics.metadata import analyze_metadata
+
+def test_metadata(file_path: str):
+    print(f"\nTesting metadata analysis on: {file_path}")
+    result = analyze_metadata(file_path)
+    print(f"Result:   {result['result']}")
+    print(f"Flags:    {result['flags']}")
+    print(f"Software: {result['software_detected']}")
+    print(f"Notes:    {result['notes']}")
+    print("✅ Metadata analysis working")
+
+# Uncomment to test
+# test_metadata("path/to/your/test.pdf")
+# test_metadata("path/to/your/test.jpg")
