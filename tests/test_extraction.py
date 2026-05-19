@@ -29,4 +29,18 @@ if __name__ == "__main__":
 
     import json
     print(json.dumps(result, indent=2))
-    print("\n Extraction successful" if result else "\n Extraction failed")
+    print("\n✅ Extraction successful" if result else "\n❌ Extraction failed")
+
+# Test OCR pipeline
+from extraction.ocr import extract_text
+
+def test_ocr(file_path: str):
+    print(f"\nTesting OCR on: {file_path}")
+    result = extract_text(file_path)
+    print(f"Method: {result['method']}")
+    print(f"OCR used: {result['ocr_used']}")
+    print(f"Text preview: {result['text'][:300]}")
+    print("✅ OCR working" if result['text'] else "❌ OCR returned empty")
+
+# Uncomment and point to any PDF to test
+# test_ocr("path/to/your/test.pdf")
