@@ -1,0 +1,18 @@
+{
+  "status": "success",
+  "data": {
+    "gstin": "27AABCH1234F1Z5",
+    "legal_name": "Horizon Ventures Private Limited",
+    "trade_name": "Horizon Ventures",
+    "registration_date": "2019-06-01",
+    "gstin_status": "Active",
+    "taxpayer_type": "Regular",
+    "state": "Maharashtra",
+    "state_code": "27",
+    "turnover_slab": "Rs. Below 20 Lakhs",
+    "last_return_filed": "2024-01-20",
+    "hsn_codes": ["9983"]
+  },
+  "source": "GST_PUBLIC_API",
+  "verified_at": "2024-01-01T10:00:00Z"
+}
