@@ -54,21 +54,81 @@ eliminated, not just reduced.
 
 ## Repository Structure
 ```text
-argus/
-├── backend/                  # FastAPI backend, pipeline coordination
+ARGUS/
+├── .env.example
+├── .gitignore
+├── README.md
+├── backend/
+│   ├── .env                          # gitignored — real keys here
 │   ├── main.py
-│   ├── routers/
-│   ├── forensics/
+│   ├── requirements.txt
 │   ├── extraction/
+│   │   ├── __init__.py
+│   │   ├── groq_extractor.py
+│   │   ├── llm_client.py
+│   │   ├── ocr.py
+│   │   └── schemas.py
+│   ├── forensics/
+│   │   ├── __init__.py
+│   │   ├── copy_move.py              # skipped for MVP
+│   │   ├── ela.py
+│   │   ├── metadata.py
+│   │   ├── pdf_inspector.py
+│   │   └── timestamp.py
+│   ├── graph/
+│   │   ├── __init__.py
+│   │   └── evidence_graph.py
 │   ├── reconciliation/
+│   │   ├── __init__.py
+│   │   ├── gst.py
+│   │   └── mca21.py
+│   ├── routers/
+│   │   ├── __init__.py
+│   │   ├── claims.py
+│   │   ├── forensics.py
+│   │   ├── graph.py
+│   │   ├── reconciliation.py
+│   │   ├── status.py
+│   │   ├── upload.py
+│   │   └── verdict.py
 │   └── verdict/
-├── frontend/                 # React dashboard
-├── forensic_pipeline/        # ELA, metadata, PDF forensics (dev)
-├── claim_extraction/         # OCR, Claude extraction, Pydantic schemas (dev)
-├── mock_apis/                # JSON fixtures for MCA21, GST, DILRMP
-├── demo_scenarios/           # 4 scripted demo documents + expected verdicts
-├── docs/                     # Architecture, API contracts, demo script
-└── tests/                    # End-to-end and unit tests
+│       ├── __init__.py
+│       └── matrix.py
+├── demo_scenarios/
+│   ├── scenario0_clean_baseline/
+│   ├── scenario1_sophisticated_forgery/
+│   ├── scenario2_false_positive/
+│   └── scenario3_confirmed_fraud/
+├── docs/
+│   ├── api_contracts.md
+│   ├── demo_script.md
+│   └── qa_prep.md
+├── frontend/
+│   ├── public/
+│   │   └── index.html
+│   └── src/
+│       ├── App.jsx
+│       ├── index.jsx
+│       ├── api/
+│       │   └── argus.js
+│       ├── components/
+│       │   ├── EvidenceGraph.jsx
+│       │   ├── FileUpload.jsx
+│       │   ├── ForensicsPanel.jsx
+│       │   ├── ReconciliationPanel.jsx
+│       │   ├── StatusPoller.jsx
+│       │   └── VerdictBadge.jsx
+│       └── pages/
+│           └── Dashboard.jsx
+├── mock_apis/
+│   ├── dilrmp_property_found.json
+│   ├── dilrmp_property_notfound.json
+│   ├── gst_valid_match.json
+│   ├── gst_valid_mismatch.json
+│   ├── mca21_cin_found.json
+│   └── mca21_cin_notfound.json
+└── tests/
+    └── test_extraction.py
 
 ---
 ```
