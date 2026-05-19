@@ -79,3 +79,21 @@ def test_metadata(file_path: str):
 # Uncomment to test
 # test_metadata("path/to/your/test.pdf")
 # test_metadata("path/to/your/test.jpg")
+
+
+from forensics.pdf_inspector import inspect_pdf
+
+def test_pdf_inspector(pdf_path: str):
+    print(f"\nTesting PDF inspection on: {pdf_path}")
+    result = inspect_pdf(pdf_path)
+    print(f"Result:              {result['result']}")
+    print(f"Flags:               {result['flags']}")
+    print(f"Incremental updates: {result['incremental_updates']}")
+    print(f"Hidden layers:       {result['hidden_layers_found']}")
+    print(f"Embedded files:      {result['embedded_files_found']}")
+    print(f"JS detected:         {result['javascript_detected']}")
+    print(f"Notes:               {result['notes']}")
+    print("✅ PDF inspector working")
+
+# Uncomment to test
+# test_pdf_inspector("path/to/your/test.pdf")
