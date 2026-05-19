@@ -141,3 +141,62 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+# Environment
+.env
+backend/.env
+
+# Runtime uploads
+backend/uploads/
+
+# Dev test images
+forensic_pipeline/test_images/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Node / React
+node_modules/
+frontend/build/
+frontend/.env
+npm-debug.log*
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Large files
+datasets/
+*.csv
+*.zip
+*.tar.gz
+*.h5
+*.pt
+*.pth
+*.pkl
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/
