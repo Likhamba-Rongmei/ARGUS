@@ -1,0 +1,10 @@
+{
+  "status": "not_found",
+  "data": null,
+  "error": {
+    "code": "PROPERTY_NOT_FOUND",
+    "message": "No property record found with this ID in DILRMP registry"
+  },
+  "source": "DILRMP",
+  "verified_at": "2024-01-01T10:00:00Z"
+}
