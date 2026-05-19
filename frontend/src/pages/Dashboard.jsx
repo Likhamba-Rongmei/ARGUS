@@ -257,7 +257,7 @@ function MatrixTable() {
   const rows = [
     { forensic: "Clean",   recon: "Confirmed",    verdict: "CLEARED",              color: "#00ff9d", note: "" },
     { forensic: "Anomaly", recon: "Confirmed",    verdict: "LIKELY FALSE POSITIVE", color: "#f5c842", note: "" },
-    { forensic: "Clean",   recon: "Contradicted", verdict: "SOPHISTICATED FORGERY", color: "#ff6b35", note: "← killer feature" },
+    { forensic: "Clean",   recon: "Contradicted", verdict: "SOPHISTICATED FORGERY", color: "#ff6b35" },
     { forensic: "Anomaly", recon: "Contradicted", verdict: "CONFIRMED FRAUD",        color: "#ff2d55", note: "" },
   ];
 
@@ -277,7 +277,6 @@ function MatrixTable() {
             <td style={tdStyle}>{r.recon}</td>
             <td style={{ ...tdStyle, color: r.color }}>
               {r.verdict}
-              {r.note && <span style={{ color: "rgba(255,255,255,0.3)", marginLeft: 8, fontSize: 10 }}>{r.note}</span>}
             </td>
           </tr>
         ))}
