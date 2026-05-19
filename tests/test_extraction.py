@@ -44,3 +44,23 @@ def test_ocr(file_path: str):
 
 # Uncomment and point to any PDF to test
 # test_ocr("path/to/your/test.pdf")
+
+# Test ELA pipeline
+import sys, os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'backend'))
+
+from forensics.ela import run_ela
+
+def test_ela(file_path: str):
+    print(f"\nTesting ELA on: {file_path}")
+    result = run_ela(file_path)
+    print(f"Result:        {result['result']}")
+    print(f"Anomaly score: {result['anomaly_score']}")
+    print(f"Regions found: {len(result['flagged_regions'])}")
+    print(f"Notes:         {result['notes']}")
+    print(f"Heatmap saved: {result['heatmap_path']}")
+    print("✅ ELA working")
+
+# Uncomment to test
+# test_ela("path/to/your/test.pdf")
+# test_ela("path/to/your/test.jpg")
