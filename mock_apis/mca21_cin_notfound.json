@@ -1,0 +1,10 @@
+{
+  "status": "not_found",
+  "data": null,
+  "error": {
+    "code": "CIN_NOT_FOUND",
+    "message": "No company registered with this CIN in MCA21 database"
+  },
+  "source": "MCA21",
+  "verified_at": "2024-01-01T10:00:00Z"
+}
