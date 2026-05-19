@@ -97,3 +97,37 @@ def test_pdf_inspector(pdf_path: str):
 
 # Uncomment to test
 # test_pdf_inspector("path/to/your/test.pdf")
+
+
+from verdict.matrix import run_verdict_pipeline
+
+def test_verdict_matrix():
+    print("\nTesting verdict matrix...")
+
+    # Simulate scenario 1 — Sophisticated Forgery
+    # Forensics clean, reconciliation contradicted
+    result = run_verdict_pipeline(
+        ela_result           = {"result": "CLEAN", "anomaly_score": 0.03, "flags": [], "notes": "Clean", "heatmap_path": None},
+        metadata_result      = {"result": "CLEAN", "flags": [], "notes": "Clean"},
+        pdf_inspector_result = {"result": "CLEAN", "flags": [], "notes": "Clean"},
+        mca21_result         = {"result": "CONTRADICTED", "notes": "CIN not found in MCA21 registry"},
+        gst_result           = {"result": "UNVERIFIED",   "notes": "GSTIN not registered"},
+        claims               = {
+            "company_name": "Horizon Ventures Pvt Ltd",
+            "cin": "U72900MH2019PTC999999",
+            "gstin": "27AABCH1234F1Z5"
+        },
+        document_id="doc_test_001"
+    )
+
+    print(f"Verdict:    {result['verdict']}")
+    print(f"Label:      {result['verdict_label']}")
+    print(f"Action:     {result['action']}")
+    print(f"Confidence: {result['confidence']}")
+    print(f"Summary:    {result['summary']}")
+
+    assert result["verdict"] == "SOPHISTICATED_FORGERY", "❌ Wrong verdict"
+    print("✅ Verdict matrix working correctly")
+
+
+test_verdict_matrix()
