@@ -8,26 +8,26 @@ const VERDICT_CONFIG = {
     icon: "✓",
     sub: "Document verified across both pipelines",
   },
-  "LIKELY FALSE POSITIVE": {
+  "LIKELY_FALSE_POSITIVE": {
     color: "#f5c842",
     bg: "rgba(245,200,66,0.08)",
     border: "rgba(245,200,66,0.3)",
     icon: "⚠",
     sub: "Forensic artifact detected — reconciliation confirmed",
   },
-  "SOPHISTICATED FORGERY": {
+  "SOPHISTICATED_FORGERY": {
     color: "#ff6b35",
     bg: "rgba(255,107,53,0.08)",
     border: "rgba(255,107,53,0.3)",
     icon: "◈",
     sub: "Forensically clean — factually impossible. Escalate immediately.",
   },
-  "CONFIRMED FRAUD": {
+  "CONFIRMED_FRAUD": {
     color: "#ff2d55",
     bg: "rgba(255,45,85,0.08)",
     border: "rgba(255,45,85,0.3)",
     icon: "✕",
-    sub: "Both pipelines failed. Hard block.",
+    sub: "Forensic anomaly detected. Ground truth contradiction confirmed.",
   },
 };
 

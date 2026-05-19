@@ -34,7 +34,7 @@ def _run_pipeline(job_id: str, file_path: str, filename: str):
 
         # ── Pipeline 1: Forensics ────────────────────────────────────────────
         from forensics.ela          import run_ela
-        from forensics.metadata     import check_metadata
+        from forensics.metadata     import analyze_metadata as check_metadata
         from forensics.pdf_inspector import inspect_pdf
         from forensics.timestamp    import check_timestamps
 
@@ -56,9 +56,11 @@ def _run_pipeline(job_id: str, file_path: str, filename: str):
 
         raw_text      = extract_text(file_path)
         claims_result = extract_claims(raw_text)
+        if hasattr(claims_result, "model_dump"):
+            claims_result = claims_result.model_dump()
 
-        from reconciliation.mca21 import check_mca21
-        from reconciliation.gst   import check_gst
+        from reconciliation.mca21 import verify_cin as check_mca21
+        from reconciliation.gst   import verify_gstin as check_gst
 
         mca21_result = check_mca21(claims_result.get("cin", ""))
         gst_result   = check_gst(
@@ -74,7 +76,14 @@ def _run_pipeline(job_id: str, file_path: str, filename: str):
         # ── Verdict ──────────────────────────────────────────────────────────
         from verdict.matrix import compute_verdict
 
-        verdict_result = compute_verdict(forensics_result, reconciliation_result)
+        verdict_result = compute_verdict(
+            forensics_result.get("result", "ERROR"),
+            reconciliation_result.get("result", "UNVERIFIED"),
+            forensics_result,
+            reconciliation_result,
+            claims_result,
+            job_id
+        )
 
         # ── Evidence graph ───────────────────────────────────────────────────
         from graph.evidence_graph import build_evidence_graph

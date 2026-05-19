@@ -358,4 +358,15 @@ def _build_summary(
     reconciliation_result:  str,
     forensic_details:       dict,
     reconciliation_details: dict,
-    c
+    claims: dict
+) -> str:
+    lines = []
+    lines.append(f"Verdict: {verdict}")
+    lines.append(f"Forensic: {forensic_result} | Reconciliation: {reconciliation_result}")
+    if forensic_details.get("anomalies"):
+        lines.append(f"Forensic anomalies: {', '.join(forensic_details['anomalies'])}")
+    if reconciliation_details.get("discrepancies"):
+        lines.append(f"Discrepancies: {', '.join(reconciliation_details['discrepancies'])}")
+    if claims:
+        lines.append(f"Claims extracted: {', '.join(k for k,v in claims.items() if v)}")
+    return " | ".join(lines)

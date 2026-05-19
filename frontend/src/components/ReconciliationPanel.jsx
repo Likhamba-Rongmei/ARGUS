@@ -19,8 +19,8 @@ export default function ReconciliationPanel({ reconciliation, claims }) {
   if (!reconciliation) return null;
 
   const checks = Object.entries(reconciliation);
-  const allConfirmed = checks.every(([, v]) => v?.status === "confirmed");
-  const anyContradicted = checks.some(([, v]) => v?.status === "contradicted");
+  const allConfirmed = checks.every(([, v]) => v?.result === "CONFIRMED");
+  const anyContradicted = checks.some(([, v]) => v?.result === "CONTRADICTED");
 
   const overallColor = anyContradicted ? "#ff2d55" : allConfirmed ? "#00ff9d" : "#f5c842";
   const overallLabel = anyContradicted ? "CONTRADICTED" : allConfirmed ? "CONFIRMED" : "PARTIAL";
@@ -66,7 +66,7 @@ export default function ReconciliationPanel({ reconciliation, claims }) {
 
       <div style={{ display: "flex", flexDirection: "column", gap: 1, marginTop: 1 }}>
         {checks.map(([key, data]) => {
-          const status = data?.status || "unknown";
+          const status = (data?.result || "unknown").toLowerCase();
           const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.unknown;
           const isOpen = open === key;
 
@@ -114,26 +114,16 @@ export default function ReconciliationPanel({ reconciliation, claims }) {
                   border: "1px solid rgba(255,255,255,0.06)",
                   borderTop: "none",
                 }}>
-                  {data?.detail && (
-                    <div style={detailText}>{data.detail}</div>
+                  {data?.notes && (
+                    <div style={detailText}>{data.notes}</div>
                   )}
-                  {data?.matched_fields && (
+                  {data?.registry_data && (
                     <div style={{ marginTop: 10 }}>
-                      <div style={{ ...sectionLabel, marginBottom: 6 }}>MATCHED FIELDS</div>
-                      {Object.entries(data.matched_fields).map(([f, v]) => (
+                      <div style={{ ...sectionLabel, marginBottom: 6 }}>REGISTRY DATA</div>
+                      {Object.entries(data.registry_data).map(([f, v]) => (
                         <div key={f} style={{ display: "flex", gap: 8, padding: "3px 0" }}>
                           <span style={claimKey}>{f}</span>
-                          <span style={{ ...claimVal, color: "#00ff9d" }}>{String(v)}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  {data?.discrepancies && data.discrepancies.length > 0 && (
-                    <div style={{ marginTop: 10 }}>
-                      <div style={{ ...sectionLabel, marginBottom: 6 }}>DISCREPANCIES</div>
-                      {data.discrepancies.map((d, i) => (
-                        <div key={i} style={{ ...detailText, color: "#ff2d55" }}>
-                          <span style={{ marginRight: 8 }}>▸</span>{d}
+                          <span style={{ ...claimVal, color: "#00ff9d" }}>{Array.isArray(v) ? v.join(", ") : String(v)}</span>
                         </div>
                       ))}
                     </div>
