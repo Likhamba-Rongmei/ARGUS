@@ -11,3 +11,5 @@ opencv-python
 pikepdf
 networkx
 python-multipart
+exifread
+pikepdf
