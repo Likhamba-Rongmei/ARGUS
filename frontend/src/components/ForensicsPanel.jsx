@@ -14,7 +14,7 @@ export default function ForensicsPanel({ forensics }) {
 
   const checks = Object.entries(forensics);
   const totalAnomalies = checks.reduce(
-    (acc, [, v]) => acc + (v?.anomalies?.length || 0), 0
+    (acc, [, v]) => acc + (v?.result === 'ANOMALY' ? 1 : 0), 0
   );
 
   return (
@@ -27,9 +27,9 @@ export default function ForensicsPanel({ forensics }) {
 
       <div style={{ display: "flex", flexDirection: "column", gap: 1, marginTop: 12 }}>
         {checks.map(([key, data]) => {
-          const anomalies = data?.anomalies || [];
+          const anomalies = data?.result === 'ANOMALY' ? (data?.flags || ['anomaly_detected']) : [];
           const score = data?.score ?? 0;
-          const isClean = anomalies.length === 0;
+          const isClean = data?.result !== 'ANOMALY';
           const isOpen = open === key;
 
           return (

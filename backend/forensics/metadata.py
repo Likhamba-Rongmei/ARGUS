@@ -104,6 +104,7 @@ def analyze_exif(image_path: str) -> dict:
             f"Legitimate bank documents should not have image editing history."
         )
     elif not software and not software_legitimate:
+        flags.append("stripped_metadata")
         notes.append("No software tag found in EXIF — metadata may have been stripped.")
 
     # ── Check 2: Timestamp consistency ──
