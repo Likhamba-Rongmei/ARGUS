@@ -44,33 +44,33 @@ A fabricated document leaves **no forensic trace**. It looks completely clean to
 
 ```
                         ┌─────────────────────────────────┐
-                        │         UPLOADED DOCUMENT        │
+                        │         UPLOADED DOCUMENT       │
                         └──────────────┬──────────────────┘
                                        │
                     ┌──────────────────┴──────────────────┐
-                    │                                      │
+                    │                                     │
           ┌─────────▼──────────┐               ┌──────────▼──────────┐
-          │   PIPELINE 1       │               │   PIPELINE 2         │
-          │ Forensic Detection │               │ Ground Truth Recon   │
+          │   PIPELINE 1       │               │   PIPELINE 2        │
+          │ Forensic Detection │               │ Ground Truth Recon  │
           ├────────────────────┤               ├─────────────────────┤
-          │ • ELA (OpenCV)     │               │ • OCR (Tesseract)    │
-          │ • Metadata         │               │ • Claim Extraction   │
-          │   (ExifTool/pikepdf│               │   (Groq LLM)         │
-          │ • PDF Structure    │               │ • MCA21 lookup       │
-          │ • Timestamp checks │               │ • GST Network check  │
-          └─────────┬──────────┘               │ • DILRMP lookup      │
+          │ • ELA (OpenCV)     │               │ • OCR (Tesseract)   │
+          │ • Metadata         │               │ • Claim Extraction  │
+          │   (ExifTool/pikepdf│               │   (Groq LLM)        │
+          │ • PDF Structure    │               │ • MCA21 lookup      │
+          │ • Timestamp checks │               │ • GST Network check │
+          └─────────┬──────────┘               │ • DILRMP lookup     │
                     │                          └──────────┬──────────┘
                     │                                     │
                     └──────────────┬──────────────────────┘
                                    │
                     ┌──────────────▼──────────────────┐
-                    │        VERDICT MATRIX            │
-                    │   Four-state logic engine        │
+                    │        VERDICT MATRIX           │
+                    │   Four-state logic engine       │
                     └──────────────┬──────────────────┘
                                    │
                     ┌──────────────▼──────────────────┐
-                    │       EVIDENCE GRAPH             │
-                    │   NetworkX → D3.js visualisation │
+                    │       EVIDENCE GRAPH            │
+                    │   NetworkX → D3.js visualisation│
                     └─────────────────────────────────┘
 ```
 
