@@ -1,0 +1,18 @@
+{
+  "status": "success",
+  "data": {
+    "property_id": "MH-MUM-2019-00123",
+    "survey_number": "123/4A",
+    "owner_name": "Rajesh Kumar",
+    "co_owners": [],
+    "registered_address": "Plot 45, Andheri West, Mumbai, Maharashtra",
+    "area_sqft": 1200,
+    "registered_value": 8500000,
+    "registration_date": "2019-08-20",
+    "last_transaction_date": "2019-08-20",
+    "encumbrance": "None",
+    "land_type": "Residential"
+  },
+  "source": "DILRMP",
+  "verified_at": "2024-01-01T10:00:00Z"
+}
