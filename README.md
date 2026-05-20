@@ -1,14 +1,18 @@
-# ARGUS — Adaptive Real-time Graph-based Underwriting Surveillance System
+# ARGUS — Adaptive Real-time Graph-based Underwriting Surveillance
 
-> **SuRaksha Cyber Hackathon 2.0 | Canara Bank | Team: Cyber Junkies**
+> SuRaksha Cyber Hackathon 2.0 | Canara Bank | Team: Cyber Junkies
+
+*ARGUS — See what others miss.*
 
 ---
 
 ## What is ARGUS?
 
-ARGUS is a dual-pipeline intelligent document forensics system for real-time detection of tampering, forgery, and fabrication across financial statements, land records, and legal documents in banking underwriting.
+ARGUS is a dual-pipeline intelligent document forensics system for real-time detection of tampering, forgery, and fabrication across financial statements, GST invoices, and legal documents in banking underwriting.
 
-Most fraud detection systems run forensic checks **or** external verification. ARGUS runs **both in parallel** on every document and merges the signals through a four-state verdict matrix — catching what either pipeline alone cannot.
+Most fraud detection systems run forensic checks OR external verification. ARGUS runs both in parallel on every document and merges the signals through a verdict matrix — producing a four-state decision that catches what either pipeline alone cannot.
+
+Supported file formats: **PDF, PNG, JPG, TIFF**
 
 ---
 
@@ -18,80 +22,149 @@ Document forgery has two attack strategies:
 
 | Attack | Description | Caught By |
 |---|---|---|
-| **Alteration** | Existing document is modified | Pipeline 1 — Forensic Detection |
-| **Fabrication** | Document created from scratch | Pipeline 2 — Ground Truth Reconciliation |
+| Alteration | Existing document is modified | Pipeline 1 — Forensic Detection |
+| Fabrication | Document created from scratch | Pipeline 2 — Ground Truth Reconciliation |
 
-A fabricated document leaves **no forensic trace**. It looks completely clean to every existing system. ARGUS catches it anyway through cross-pipeline contradiction.
+A fabricated document leaves no forensic trace. It looks completely clean. No existing system catches it. ARGUS does — because forensic cleanliness combined with a contradicted claim is itself the signal.
+
+---
+
+## Design Philosophy
+
+**Pipeline 1 is intentionally aggressive.**
+
+A false positive at the forensic layer is safer than a false negative, because Pipeline 2 acts as the confirmation layer. If Pipeline 1 flags a clean document but Pipeline 2 confirms the claims, the verdict resolves to LIKELY FALSE POSITIVE — not a hard block. The system self-corrects.
+
+A false negative at Pipeline 1 is dangerous. If both pipelines miss a fraudulent document, it gets CLEARED. That is the worst outcome ARGUS is designed to prevent.
+
+This means: **a fraudster must beat both pipelines simultaneously to get a CLEARED verdict.**
+
+**Why not just Pipeline 2 alone?**
+
+Pipeline 2 verifies claims against registries — but it can be fooled by three attacks it cannot detect on its own:
+
+1. Tampered real documents — someone takes a legitimate company's document with a valid CIN and GSTIN, then edits the declared turnover from 5 Crore to 500 Crore. Pipeline 2 confirms the identifiers are real and passes it. Pipeline 1 catches the pixel-level edit.
+
+2. Stolen identity — a fraudster copies a real company's valid CIN and GSTIN onto a fake document. Pipeline 2 confirms both numbers exist in the registry and passes it. Pipeline 1 detects the document was digitally constructed or that metadata was stripped.
+
+3. Backdated documents — a document created today but claiming to be a 2019 financial statement. Pipeline 2 has no way to verify document age. Pipeline 1's temporal consistency check catches the creation date mismatch.
 
 ---
 
 ## The Four-State Verdict Matrix
 
-| Forensic | Reconciliation | Verdict | Action |
+| Forensic | Reconciliation | Verdict | Meaning |
 |---|---|---|---|
-| Clean | Confirmed | **CLEARED** | Approve |
-| Anomaly | Confirmed | **LIKELY FALSE POSITIVE** | Auto-clear with note |
-| Clean | Contradicted | **SOPHISTICATED FORGERY** | Escalate immediately |
-| Anomaly | Contradicted | **CONFIRMED FRAUD** | Hard block |
+| Clean | Confirmed | CLEARED | High confidence, approved |
+| Anomaly | Confirmed | LIKELY FALSE POSITIVE | Auto-cleared with note |
+| Clean | Contradicted | SOPHISTICATED FORGERY | Escalate immediately |
+| Anomaly | Contradicted | CONFIRMED FRAUD | Hard block |
 
-**Row 3 is the killer feature.** A forensically perfect but factually impossible document — no prior system catches this. ARGUS does.
+**Row 3 is the killer feature.** A forensically perfect but factually impossible document — a clean fake created from scratch with a fictional CIN or invalid GSTIN. No prior system catches this. ARGUS does.
 
-**Row 2 is what makes ARGUS deployable.** False positives are structurally eliminated, not just reduced. A badly scanned but legitimate document gets cleared, not flagged.
+**Row 2 is what makes ARGUS deployable.** False positives from scan compression or screenshot artifacts are structurally resolved by Pipeline 2, not just reduced.
 
 ---
 
-## System Architecture
+## How It Works
 
 ```
-                        ┌─────────────────────────────────┐
-                        │         UPLOADED DOCUMENT       │
-                        └──────────────┬──────────────────┘
-                                       │
-                    ┌──────────────────┴──────────────────┐
-                    │                                     │
-          ┌─────────▼──────────┐               ┌──────────▼──────────┐
-          │   PIPELINE 1       │               │   PIPELINE 2        │
-          │ Forensic Detection │               │ Ground Truth Recon  │
-          ├────────────────────┤               ├─────────────────────┤
-          │ • ELA (OpenCV)     │               │ • OCR (Tesseract)   │
-          │ • Metadata         │               │ • Claim Extraction  │
-          │   (ExifTool/pikepdf│               │   (Groq LLM)        │
-          │ • PDF Structure    │               │ • MCA21 lookup      │
-          │ • Timestamp checks │               │ • GST Network check │
-          └─────────┬──────────┘               │ • DILRMP lookup     │
-                    │                          └──────────┬──────────┘
-                    │                                     │
-                    └──────────────┬──────────────────────┘
-                                   │
-                    ┌──────────────▼──────────────────┐
-                    │        VERDICT MATRIX           │
-                    │   Four-state logic engine       │
-                    └──────────────┬──────────────────┘
-                                   │
-                    ┌──────────────▼──────────────────┐
-                    │       EVIDENCE GRAPH            │
-                    │   NetworkX → D3.js visualisation│
-                    └─────────────────────────────────┘
+Document Upload (PDF / PNG / JPG / TIFF)
+      │
+      ▼
+OCR Extraction
+(Tesseract + PyMuPDF)
+      │
+      ▼
+Claim Extraction
+(Groq LLaMA — extracts CIN, GSTIN, company name, revenue)
+      │
+ ┌────┴────┐
+ ▼         ▼
+Pipeline 1 Pipeline 2
+Forensic Reconciliation
+Analysis (MCA21 + GST)
+ │         │
+ └────┬────┘
+      ▼
+Verdict Matrix
+(4-state decision)
+      │
+      ▼
+Evidence Graph
+(Force-directed visualization)
 ```
+
+### Pipeline 1 — Forensic Analysis
+
+| Check | What It Detects |
+|---|---|
+| Error Level Analysis (ELA) | Pixel-level re-save artifacts from image editing. Threshold calibrated to 5.0 to prioritize recall. |
+| Metadata Forensics | Suspicious editing software in EXIF, stripped metadata on documents that should have it, timestamp mismatches |
+| PDF Structure Inspection | Incremental saves, hidden layers, embedded files, font inconsistencies, object stream anomalies |
+| Temporal Consistency | Creation vs modification date anomalies, backdated documents |
+
+### Pipeline 2 — Ground Truth Reconciliation
+
+| Check | What It Verifies |
+|---|---|
+| MCA21 Registry | CIN format validity and existence in company registry |
+| GST Network | GSTIN format validity, active status, and revenue slab consistency |
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
+| Layer | Tools |
 |---|---|
-| **LLM / Claim Extraction** | Groq API — `llama-3.1-8b-instant` (free tier) |
-| **OCR** | Tesseract (local) |
-| **Visual Forensics** | OpenCV — Error Level Analysis |
-| **Metadata Forensics** | ExifTool, pikepdf, exifread (local) |
-| **Reconciliation** | Mock JSON adapters for MCA21, GST, DILRMP |
-| **Evidence Graph** | NetworkX (build) + D3.js (visualise) |
-| **Backend** | FastAPI + Python |
-| **Frontend** | React + D3.js |
-| **Verdict Engine** | Pure Python four-state logic |
+| Document Parsing | PyMuPDF, pdfplumber, Tesseract OCR |
+| Claim Extraction | Groq API (LLaMA), Pydantic |
+| Visual Forensics | OpenCV (ELA), Pillow |
+| Metadata Forensics | ExifRead, pikepdf |
+| Reconciliation | MCA21 mock adapter, GST mock adapter (real API integration in Round 2) |
+| Evidence Graph | NetworkX, React force-directed graph |
+| Backend | FastAPI, Python, uvicorn |
+| Frontend | React.js |
 
-> **Runtime:** Fully local. No cloud deployment required for demo.
-> FastAPI on `localhost:8000`, React on `localhost:3000`.
+---
+
+## Demo Scenarios
+
+### Scenario 0 — Clean Baseline
+Legitimate document, real CIN, clean scan.
+Forensics: **Clean** | Reconciliation: **Confirmed** | Verdict: **CLEARED**
+
+### Scenario 1 — Sophisticated Forgery (Killer Demo)
+A fabricated financial statement with a fictional CIN. Forensically perfect.
+Forensics: **Clean** | Reconciliation: **Contradicted** | Verdict: **SOPHISTICATED FORGERY**
+*No prior system catches this. ARGUS does.*
+
+### Scenario 2 — Likely False Positive (Deployability Argument)
+A legitimate document with scan compression artifacts triggering ELA flags.
+Forensics: **Anomaly** | Reconciliation: **Confirmed** | Verdict: **LIKELY FALSE POSITIVE**
+*False positives are structurally resolved, not just reduced.*
+
+### Scenario 3 — Confirmed Fraud
+Visible tampering + fictional CIN. Both pipelines fire.
+Forensics: **Anomaly** | Reconciliation: **Contradicted** | Verdict: **CONFIRMED FRAUD — Hard block**
+
+---
+
+## Current Status
+
+- [x] Idea conceptualized and submitted
+- [x] Architecture designed
+- [x] Repository initialized
+- [x] OCR + claim extraction pipeline (Groq LLaMA)
+- [x] Forensic detection pipeline (ELA, metadata, PDF inspector, timestamp)
+- [x] Mock API reconciliation (MCA21 + GST)
+- [x] Verdict matrix engine
+- [x] Evidence graph visualization
+- [x] React dashboard
+- [x] End-to-end pipeline tested across PDF, PNG, JPG, TIFF
+- [ ] Demo documents finalized
+- [ ] Real API integration (Round 2 — Cashfree/Surepass)
+- [ ] Final submission ready
 
 ---
 
@@ -103,209 +176,88 @@ ARGUS/
 ├── .gitignore
 ├── README.md
 ├── backend/
-│   ├── .env                          # gitignored — real keys here
-│   ├── main.py
-│   ├── requirements.txt
-│   ├── extraction/
-│   │   ├── __init__.py
-│   │   ├── groq_extractor.py         # Groq LLM claim extraction
-│   │   ├── llm_client.py             # Groq API client
-│   │   ├── ocr.py                    # Tesseract OCR wrapper
-│   │   └── schemas.py                # Pydantic claim schemas
-│   ├── forensics/
-│   │   ├── __init__.py
-│   │   ├── ela.py                    # Error Level Analysis (OpenCV)
-│   │   ├── metadata.py               # EXIF / metadata forensics
-│   │   ├── pdf_inspector.py          # PDF structure inspection
-│   │   ├── timestamp.py              # Temporal consistency checks
-│   │   └── copy_move.py              # Copy-move detection (skipped MVP)
-│   ├── graph/
-│   │   ├── __init__.py
-│   │   └── evidence_graph.py         # NetworkX graph builder
-│   ├── reconciliation/
-│   │   ├── __init__.py
-│   │   ├── mca21.py                  # MCA21 company registry adapter
-│   │   └── gst.py                    # GST Network adapter
-│   ├── routers/
-│   │   ├── __init__.py
-│   │   ├── upload.py                 # POST /api/upload
-│   │   ├── status.py                 # GET  /api/status/{job_id}
-│   │   ├── verdict.py                # GET  /api/verdict/{job_id}
-│   │   ├── claims.py                 # GET  /api/claims/{job_id}
-│   │   ├── forensics.py              # GET  /api/forensics/{job_id}
-│   │   ├── reconciliation.py         # GET  /api/reconciliation/{job_id}
-│   │   └── graph.py                  # GET  /api/graph/{job_id}
-│   └── verdict/
-│       ├── __init__.py
-│       └── matrix.py                 # Four-state verdict engine
-├── demo_scenarios/
-│   ├── scenario0_clean_baseline/
-│   ├── scenario1_sophisticated_forgery/
-│   ├── scenario2_false_positive/
-│   └── scenario3_confirmed_fraud/
-├── docs/
-│   ├── api_contracts.md
-│   ├── demo_script.md
-│   └── qa_prep.md
+│ ├── main.py
+│ ├── requirements.txt
+│ ├── extraction/
+│ │ ├── groq_extractor.py
+│ │ ├── ocr.py
+│ │ └── schemas.py
+│ ├── forensics/
+│ │ ├── ela.py
+│ │ ├── metadata.py
+│ │ ├── pdf_inspector.py
+│ │ └── timestamp.py
+│ ├── graph/
+│ │ └── evidence_graph.py
+│ ├── reconciliation/
+│ │ ├── gst.py
+│ │ └── mca21.py
+│ ├── routers/
+│ │ ├── upload.py
+│ │ ├── claims.py
+│ │ ├── forensics.py
+│ │ ├── graph.py
+│ │ ├── reconciliation.py
+│ │ ├── status.py
+│ │ └── verdict.py
+│ └── verdict/
+│ └── matrix.py
 ├── frontend/
-│   ├── package.json
-│   ├── public/
-│   │   └── index.html
-│   └── src/
-│       ├── App.jsx
-│       ├── index.jsx
-│       ├── api/
-│       │   └── argus.js              # All API calls
-│       ├── components/
-│       │   ├── EvidenceGraph.jsx     # D3.js force-directed graph
-│       │   ├── FileUpload.jsx        # Drag-and-drop upload
-│       │   ├── ForensicsPanel.jsx    # Pipeline 1 results accordion
-│       │   ├── ReconciliationPanel.jsx # Pipeline 2 results
-│       │   ├── StatusPoller.jsx      # Background job polling
-│       │   └── VerdictBadge.jsx      # Four-state verdict display
-│       └── pages/
-│           └── Dashboard.jsx         # Main UI
+│ └── src/
+│ ├── App.jsx
+│ ├── api/argus.js
+│ ├── components/
+│ │ ├── EvidenceGraph.jsx
+│ │ ├── FileUpload.jsx
+│ │ ├── ForensicsPanel.jsx
+│ │ ├── ReconciliationPanel.jsx
+│ │ ├── StatusPoller.jsx
+│ │ └── VerdictBadge.jsx
+│ └── pages/
+│ └── Dashboard.jsx
 ├── mock_apis/
-│   ├── mca21_cin_found.json
-│   ├── mca21_cin_notfound.json
-│   ├── gst_valid_match.json
-│   ├── gst_valid_mismatch.json
-│   ├── dilrmp_property_found.json
-│   └── dilrmp_property_notfound.json
+│ ├── gst_valid_match.json
+│ ├── gst_valid_mismatch.json
+│ ├── mca21_cin_found.json
+│ └── mca21_cin_notfound.json
 └── tests/
-    └── test_extraction.py
+└── test_extraction.py
 ```
 
 ---
 
-## Setup Instructions
+## Setup
 
 ### Prerequisites
+- Python 3.10+
+- Node.js 18+
+- Homebrew (Mac) or Git Bash (Windows)
+- Groq API key (free at console.groq.com)
+- Tesseract OCR (`brew install tesseract`)
+- ExifTool (`brew install exiftool`)
 
-| Requirement | Version |
-|---|---|
-| Python | 3.10+ |
-| Node.js | 18+ |
-| Tesseract OCR | Any recent (must be in PATH) |
-| ExifTool | Any recent (must be in PATH) |
-
-Install Tesseract:
-- **Ubuntu/Debian:** `sudo apt install tesseract-ocr`
-- **macOS:** `brew install tesseract`
-- **Windows:** [Download installer](https://github.com/UB-Mannheim/tesseract/wiki)
-
-Install ExifTool:
-- **Ubuntu/Debian:** `sudo apt install libimage-exiftool-perl`
-- **macOS:** `brew install exiftool`
-- **Windows:** [Download from exiftool.org](https://exiftool.org)
-
----
-
-### Backend Setup
-
+### Backend
 ```bash
 cd backend
-python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-cp ../.env.example .env         # then add your GROQ_API_KEY
+cp ../.env.example .env
+# Add your GROQ_API_KEY to .env
 uvicorn main:app --reload
 ```
 
-Backend will be live at `http://localhost:8000`.
-Swagger docs at `http://localhost:8000/docs`.
-
----
-
-### Frontend Setup
-
+### Frontend
 ```bash
 cd frontend
 npm install
 npm start
 ```
 
-Frontend will open at `http://localhost:3000`.
-
----
-
 ### Environment Variables
-
-Copy `.env.example` to `backend/.env` and fill in your values:
-
-```env
-GROQ_API_KEY=your_actual_key_here
-LLM_PROVIDER=groq
+```
+GROQ_API_KEY=your_key_here
 MCA21_MOCK=true
 GST_MOCK=true
-DILRMP_MOCK=true
-BACKEND_HOST=localhost
-BACKEND_PORT=8000
 ```
-
-> Get a free Groq API key at [console.groq.com](https://console.groq.com).
-> All reconciliation APIs run in mock mode for the demo — no external API keys required.
-
----
-
-## API Reference
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api/upload` | Upload document, returns `job_id` |
-| `GET` | `/api/status/{job_id}` | Poll analysis status |
-| `GET` | `/api/verdict/{job_id}` | Get four-state verdict |
-| `GET` | `/api/claims/{job_id}` | Get extracted claims |
-| `GET` | `/api/forensics/{job_id}` | Get forensic analysis results |
-| `GET` | `/api/reconciliation/{job_id}` | Get reconciliation results |
-| `GET` | `/api/graph/{job_id}` | Get evidence graph (node-link JSON) |
-
-All result endpoints return `HTTP 202` if the job is still running.
-
----
-
-## Demo Scenarios
-
-Four pre-built scenarios covering every cell of the verdict matrix:
-
-### Scenario 0 — Clean Baseline
-- Legitimate document, real CIN, clean scan
-- Forensics: **Clean** | Reconciliation: **Confirmed**
-- Expected verdict: `CLEARED`
-
-### Scenario 1 — Sophisticated Forgery *(killer demo)*
-- Fabricated financial statement with a fictional CIN (ending `999999`)
-- Forensically perfect — no pixel or metadata anomalies
-- Reconciliation fails: CIN does not exist in MCA21
-- Forensics: **Clean** | Reconciliation: **Contradicted**
-- Expected verdict: `SOPHISTICATED FORGERY`
-- **No prior system catches this. ARGUS does.**
-
-### Scenario 2 — Likely False Positive *(deployability argument)*
-- Legitimate document with bad scan compression triggering ELA flags
-- Real CIN confirmed by MCA21
-- Forensics: **Anomaly** | Reconciliation: **Confirmed**
-- Expected verdict: `LIKELY FALSE POSITIVE`
-- **Demonstrates ARGUS does not over-block legitimate documents.**
-
-### Scenario 3 — Confirmed Fraud
-- Tampered document (visible pixel anomalies) + fictional CIN
-- Both pipelines fail independently
-- Forensics: **Anomaly** | Reconciliation: **Contradicted**
-- Expected verdict: `CONFIRMED FRAUD`
-
----
-
-## Mock API Logic
-
-All reconciliation adapters run against local JSON files in `mock_apis/`. No external network calls are made during the demo.
-
-| Trigger | Behaviour |
-|---|---|
-| CIN ending in `999999` | MCA21 returns `not_found` → CONTRADICTED |
-| Any other CIN | MCA21 returns `found` + company details → CONFIRMED |
-| GSTIN with matching turnover (±20%) | GST returns `match` → CONFIRMED |
-| GSTIN with mismatched turnover | GST returns `mismatch` → CONTRADICTED |
 
 ---
 
@@ -314,42 +266,45 @@ All reconciliation adapters run against local JSON files in `mock_apis/`. No ext
 | Branch | Purpose |
 |---|---|
 | `main` | Stable, demo-ready only |
-| `dev` | Integration branch |
-| `frontend` | UI development |
-| `backend` | FastAPI development |
-| `forensics` | Pipeline development |
-
-Nobody pushes directly to `main`. All work merges into `dev` first, then to `main` when stable.
+| `dev` | Integration branch — all fixes go here first |
 
 ---
 
-## Project Status
+## Known Limitations
 
-- [x] Architecture designed
-- [x] Repository initialised
-- [x] Extraction pipeline (OCR + Groq)
-- [x] Forensic pipeline (ELA, metadata, PDF, timestamp)
-- [x] Mock reconciliation adapters (MCA21, GST, DILRMP)
-- [x] Verdict matrix engine
-- [x] Evidence graph builder (NetworkX)
-- [x] FastAPI backend (all 7 endpoints)
-- [x] React frontend (Dashboard, all components)
-- [ ] Demo scenario documents prepared
-- [ ] End-to-end run tested
-- [ ] Final submission ready
+### The Stolen Identity + Clean Fabrication Attack
+
+If an attacker creates a document from scratch (no tampering, beats Pipeline 1)
+AND uses a stolen but real CIN and GSTIN (registry confirms, beats Pipeline 2),
+ARGUS returns CLEARED. This is a known blind spot.
+
+**Why it is still a hard attack in practice:**
+
+- CIN + GSTIN + company name + state + turnover slab must all be internally
+consistent. One mismatch contradicts the document and fires Pipeline 2.
+- The declared revenue must fall within the actual GST turnover slab of the
+stolen identity. Overclaiming revenue on a small company's credentials
+gets caught by the revenue cross-check.
+- This attack requires prior identity theft of another company's credentials —
+a separate and harder crime that leaves its own trail.
+
+**What closes this gap in production (Round 2 roadmap):**
+
+- Liveness check — flag if the same CIN has been submitted multiple times
+across different applications
+- Cross-document consistency — balance sheet vs ITR vs bank statement
+must agree on figures
+- Behavioural signals — submission metadata, device fingerprint, velocity
+
+No single-layer system catches everything. ARGUS is designed so that
+each additional layer geometrically increases the attacker's cost.
 
 ---
-
 ## Hackathon Context
 
-| | |
-|---|---|
-| **Event** | SuRaksha Cyber Hackathon 2.0 |
-| **Organiser** | Canara Bank |
-| **Theme** | Real-time Anomaly Detection in Banking |
-| **Team** | Cyber Junkies |
-| **Phase** | Prototype |
-
----
-
-*ARGUS — See what others miss.*
+**Event:** SuRaksha Cyber Hackathon 2.0
+**Organizer:** Canara Bank
+**Theme:** Real-time Anomaly Detection
+**Round 1 Deadline:** 24th May 2026
+**Prototype Phase:** 1st June – 30th June 2026
+**Final Onsite (Bangalore):** 20th July 2026
