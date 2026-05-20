@@ -87,12 +87,28 @@ export default function ForensicsPanel({ forensics }) {
                   {anomalies.length === 0 ? (
                     <div style={cleanMsg}>No anomalies detected.</div>
                   ) : (
-                    anomalies.map((a, i) => (
-                      <div key={i} style={anomalyRow}>
-                        <span style={{ color: "#ff6b35", marginRight: 8 }}>▸</span>
-                        {a}
-                      </div>
-                    ))
+                    <>
+                      {data?.notes && (
+                        <div style={{ ...anomalyRow, color: "#ff6b35", marginBottom: 8 }}>
+                          <span style={{ marginRight: 8 }}>▸</span>{data.notes}
+                        </div>
+                      )}
+                      {data?.anomaly_score !== undefined && (
+                        <div style={{ ...anomalyRow, color: "rgba(255,255,255,0.5)", fontSize: 10 }}>
+                          SCORE: {data.anomaly_score} / THRESHOLD: {data.threshold}
+                        </div>
+                      )}
+                      {data?.flagged_regions?.length > 0 && (
+                        <div style={{ ...anomalyRow, color: "rgba(255,255,255,0.5)", fontSize: 10 }}>
+                          SUSPICIOUS REGIONS: {data.flagged_regions.length} area(s) flagged
+                        </div>
+                      )}
+                      {data?.flags?.map((f, i) => (
+                        <div key={i} style={{ ...anomalyRow, color: "#ff6b35" }}>
+                          <span style={{ marginRight: 8 }}>▸</span>{f.replace(/_/g, ' ').toUpperCase()}
+                        </div>
+                      ))}
+                    </>
                   )}
 
                   {data?.details && (
