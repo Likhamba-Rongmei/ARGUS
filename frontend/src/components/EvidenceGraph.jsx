@@ -4,10 +4,19 @@ import * as d3 from "d3";
 const NODE_COLORS = {
   document:       "#7f77dd",
   claim:          "#1d9e75",
-  forensic:       "#ff6b35",
-  reconciliation: "#f5c842",
-  verdict:        "#ff2d55",
+  forensic:       "#1d9e75",
+  reconciliation: "#1d9e75",
+  verdict:        "#1d9e75",
 };
+
+// Legend items shown to user — separate from actual node colors
+const LEGEND_ITEMS = [
+  { label: "document",    color: "#7f77dd" },
+  { label: "claim",       color: "#1d9e75" },
+  { label: "clean",       color: "#1d9e75" },
+  { label: "anomaly",     color: "#ff6b35" },
+  { label: "contradicted",color: "#ff2d55" },
+];
 
 const EDGE_COLORS = {
   supports:     "#1d9e75",
@@ -90,13 +99,13 @@ export default function EvidenceGraph({ graphData }) {
     node.append("circle")
       .attr("r", d => d.node_type === "verdict" ? 22 : d.node_type === "document" ? 18 : 14)
       .attr("fill", d => {
-        const base = NODE_COLORS[d.node_type] || "#888";
+        const base = d.color || NODE_COLORS[d.node_type] || "#888";
         return base + "22";
       })
-      .attr("stroke", d => NODE_COLORS[d.node_type] || "#888")
+      .attr("stroke", d => d.color || NODE_COLORS[d.node_type] || "#888")
       .attr("stroke-width", d => d.node_type === "verdict" ? 2 : 1)
       .style("filter", d => d.node_type === "verdict"
-        ? `drop-shadow(0 0 6px ${NODE_COLORS.verdict}88)`
+        ? `drop-shadow(0 0 6px ${(d.color || NODE_COLORS.verdict)}88)`
         : "none"
       );
 
@@ -154,8 +163,8 @@ export default function EvidenceGraph({ graphData }) {
         gap: "12px 24px",
         marginTop: 12,
       }}>
-        {Object.entries(NODE_COLORS).map(([type, color]) => (
-          <div key={type} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        {LEGEND_ITEMS.map(({ label, color }) => (
+          <div key={label} style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <span style={{
               width: 8, height: 8, borderRadius: "50%",
               background: color, display: "inline-block",
@@ -165,7 +174,7 @@ export default function EvidenceGraph({ graphData }) {
               color: "rgba(255,255,255,0.3)",
               fontFamily: "'JetBrains Mono', monospace",
               letterSpacing: "0.06em",
-            }}>{type}</span>
+            }}>{label}</span>
           </div>
         ))}
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>

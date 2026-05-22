@@ -140,6 +140,11 @@ def extract_text_from_image(image_path: str) -> dict:
 
 # ─── MAIN ENTRY POINT ──────────────────────────────────────────────────────────
 
+def _clean_text(text: str) -> str:
+    """Remove invalid Unicode surrogates that break JSON serialization."""
+    return text.encode('utf-8', errors='ignore').decode('utf-8')
+
+
 def extract_text(file_path: str) -> dict:
     """
     Universal entry point for text extraction.

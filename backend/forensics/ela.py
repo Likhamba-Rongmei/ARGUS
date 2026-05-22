@@ -15,7 +15,7 @@ from pathlib import Path
 
 ELA_QUALITY = 90          # JPEG re-save quality for ELA
 ELA_SCALE = 15            # Amplification scale for difference visibility
-ANOMALY_THRESHOLD = 5.0  # Mean ELA intensity above this = anomaly flagged
+ANOMALY_THRESHOLD = 5.5  # Mean ELA intensity above this = anomaly flagged
 
 
 # ─── CORE ELA ALGORITHM ────────────────────────────────────────────────────────

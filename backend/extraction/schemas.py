@@ -21,8 +21,10 @@ class DocumentClaims(BaseModel):
     survey_number: Optional[str] = None
     registered_property_value: Optional[float] = None
     account_number: Optional[str] = None
+    utr: Optional[str] = None
     account_holder: Optional[str] = None
     bank_name: Optional[str] = None
+    opening_balance: Optional[float] = None
     extraction_confidence: float = Field(default=0.0,
         description="0.0 to 1.0 — how confident the extraction is overall"
     )

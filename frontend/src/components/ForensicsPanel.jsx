@@ -12,7 +12,7 @@ export default function ForensicsPanel({ forensics }) {
 
   if (!forensics) return null;
 
-  const checks = Object.entries(forensics);
+  const checks = Object.entries(forensics).filter(([, v]) => v?.result !== "SKIPPED");
   const totalAnomalies = checks.reduce(
     (acc, [, v]) => acc + (v?.result === 'ANOMALY' ? 1 : 0), 0
   );

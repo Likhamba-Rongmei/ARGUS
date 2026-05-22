@@ -1,0 +1,13 @@
+{
+  "status": "success",
+  "data": {
+    "utr": "CANA526203000001",
+    "payment_rail": "NEFT",
+    "bank_code": "CANA",
+    "transaction_date": "2026-03-20",
+    "amount": 50000,
+    "status": "SUCCESS",
+    "sender_bank": "Canara Bank",
+    "receiver_bank": "State Bank of India"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "status": "success",
+  "data": {
+    "account_number": "00000010111171171",
+    "account_holder": "Mule Chenna Reddy",
+    "bank_name": "State Bank of India",
+    "ifsc": "SBIN0003606",
+    "account_type": "Savings",
+    "account_status": "Active",
+    "kyc_verified": true,
+    "mobile_linked": true,
+    "state": "Telangana",
+    "opening_balance": 75222.71,
+    "balance_as_of": "2018-04-16"
+  }
+}

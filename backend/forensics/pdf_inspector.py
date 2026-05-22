@@ -357,23 +357,9 @@ def _check_object_streams(pdf: pikepdf.Pdf) -> list:
 
     try:
         # Check for very high object count relative to page count
-        page_count = len(pdf.pages)
-        object_count = 0
-
-        for objnum in range(1, 1000):
-            try:
-                pdf.get_object((objnum, 0))
-                object_count += 1
-            except:
-                break
-
-        if page_count > 0:
-            ratio = object_count / page_count
-            if ratio > 100:
-                anomalies.append(
-                    f"High object-to-page ratio ({ratio:.0f} objects/page) — "
-                    f"may indicate hidden content"
-                )
+        # Object ratio check removed — unreliable for modern PDF generators
+        # (Canva, ClearTax, Adobe export 500+ objects legitimately)
+        pass
 
         return anomalies
 

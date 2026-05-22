@@ -67,25 +67,13 @@ def _mock_verify_cin(cin: str, claimed_company_name: str = None) -> dict:
     fixture = _load_fixture("mca21_cin_found.json")
     registry_data = fixture.get("data", {})
 
-    # Check if company name matches
-    name_match = True
-    name_note  = ""
-    if claimed_company_name and registry_data.get("company_name"):
-        claimed_clean  = claimed_company_name.lower().strip()
-        registry_clean = registry_data["company_name"].lower().strip()
-        name_match = _fuzzy_name_match(claimed_clean, registry_clean)
-        if not name_match:
-            name_note = (
-                f"Company name mismatch: claimed='{claimed_company_name}', "
-                f"registry='{registry_data['company_name']}'."
-            )
-
-    if not name_match:
+    # CIN must match mock exactly
+    if cin.upper() != registry_data.get("cin", "").upper():
         return {
             "result": "CONTRADICTED",
             "claim": cin,
-            "registry_data": registry_data,
-            "notes": name_note,
+            "registry_data": None,
+            "notes": f"CIN {cin} not found in MCA21 registry.",
             "mock": True
         }
 

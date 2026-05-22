@@ -1,0 +1,14 @@
+{
+  "status": "success",
+  "data": {
+    "cin": "U74999MH2019PTC123456",
+    "company_name": "ISSAC OLDTON PRIVATE LIMITED",
+    "registration_date": "2019-03-15",
+    "company_status": "Active",
+    "company_type": "Private Limited",
+    "state": "Maharashtra",
+    "registered_address": "Plot 45 MIDC Industrial Area Pune Maharashtra 411019",
+    "authorized_capital": 1000000,
+    "paid_up_capital": 500000
+  }
+}

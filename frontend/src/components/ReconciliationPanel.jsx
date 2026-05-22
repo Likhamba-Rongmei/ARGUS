@@ -18,7 +18,7 @@ export default function ReconciliationPanel({ reconciliation, claims }) {
 
   if (!reconciliation) return null;
 
-  const checks = Object.entries(reconciliation);
+  const checks = Object.entries(reconciliation).filter(([, v]) => v?.result !== 'UNVERIFIED' && v?.status !== 'UNVERIFIED');
   const allConfirmed = checks.every(([, v]) => v?.result === "CONFIRMED");
   const anyContradicted = checks.some(([, v]) => v?.result === "CONTRADICTED");
 

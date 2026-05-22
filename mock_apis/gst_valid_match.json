@@ -1,18 +1,19 @@
 {
   "status": "success",
   "data": {
-    "gstin": "27AABCH1234F1Z5",
-    "legal_name": "Horizon Ventures Private Limited",
-    "trade_name": "Horizon Ventures",
-    "registration_date": "2019-06-01",
+    "gstin": "27AABCT1234F1Z5",
+    "legal_name": "Issac Oldton Private Limited",
+    "trade_name": "Issac Oldton Pvt Ltd",
+    "registration_date": "2019-03-15",
     "gstin_status": "Active",
     "taxpayer_type": "Regular",
     "state": "Maharashtra",
     "state_code": "27",
-    "turnover_slab": "Rs. 1 Crore to Rs. 5 Crore",
-    "last_return_filed": "2024-01-20",
-    "hsn_codes": ["9983", "9985"]
-  },
-  "source": "GST_PUBLIC_API",
-  "verified_at": "2024-01-01T10:00:00Z"
+    "turnover_slab": "Rs. 10 Lakh to Rs. 1 Crore",
+    "last_return_filed": "2026-03-20",
+    "hsn_codes": [
+      "9983",
+      "9985"
+    ]
+  }
 }

@@ -61,13 +61,15 @@ def _mock_verify_gstin(
     Checks format validity first.
     If declared_revenue provided, checks against turnover slab.
     """
-    if not _is_valid_gstin_format(gstin):
+    # GSTIN must match mock exactly
+    fixture = _load_fixture("gst_valid_match.json")
+    registry_data = fixture.get("data", {})
+    if gstin.upper() != registry_data.get("gstin", "").upper():
         return {
             "result": "CONTRADICTED",
             "claim": gstin,
             "registry_data": None,
-            "notes": f"GSTIN {gstin} has invalid format. "
-                     f"Cannot exist in GST registry.",
+            "notes": f"GSTIN {gstin} not found in GST registry.",
             "mock": True
         }
 
