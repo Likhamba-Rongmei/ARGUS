@@ -1,6 +1,5 @@
 # ARGUS — Adaptive Real-time Graph-based Underwriting Surveillance
 
-> SuRaksha Cyber Hackathon 2.0 | Canara Bank | Team: Cyber Junkies
 
 *ARGUS — See what others miss.*
 
@@ -194,26 +193,6 @@ ELA and noise analysis do not reliably catch edits made by Photoshop or Snapseed
 
 ---
 
-## Current Status
-
-- [x] Idea conceptualized and submitted
-- [x] Architecture designed
-- [x] Repository initialized
-- [x] OCR + claim extraction pipeline (Groq LLaMA)
-- [x] Forensic pipeline — ELA, JPEG Ghost, Noise Analysis, Metadata, PDF Inspector, Timestamp
-- [x] Reconciliation — MCA21, GST, NACH, DILRMP mock adapters
-- [x] Verdict matrix engine (4-state)
-- [x] Evidence graph visualization
-- [x] React dashboard
-- [x] End-to-end tested — tax invoice, bank statement, land record (PDF/PNG/JPG/TIFF)
-- [x] Unicode sanitization for regional language documents
-- [x] SKIPPED checks hidden from UI and graph
-- [x] Verdict label consistency (underscore format throughout)
-- [ ] DCT coefficient analysis for Photoshop PNG detection (Future scope)
-- [ ] Cross-document consistency checks (Future scope)
-- [ ] Final submission ready
-
----
 
 ## Repository Structure
 
@@ -333,21 +312,4 @@ To demo with different values, update both the mock JSON in `mock_apis/` and the
 
 ---
 
-## Branch Strategy
 
-| Branch | Purpose |
-|---|---|
-| `main` | Stable, demo-ready only |
-| `dev` | Integration branch — all fixes go here first |
-
----
-
-## Hackathon Context
-
-**Event:** SuRaksha Cyber Hackathon 2.0
-**Organizer:** Canara Bank
-**Theme:** Real-time Anomaly Detection
-**Round 1:** Submitted — 14th May 2026
-**Round 1 Deadline:** 24th May 2026
-**Prototype Phase:** 1st June – 30th June 2026
-**Final Onsite (Bangalore):** 20th July 2026
